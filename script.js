@@ -111,10 +111,12 @@ function generateCalendar(year, month) {
     const firstDayIndex = date.getDay();
     const daysInMonth = new Date(year, month + 1, 0).getDate();
 
+    // เพิ่มช่องว่างก่อนวันแรกของเดือน
     for (let i = 0; i < firstDayIndex; i++) {
         calendarContainer.appendChild(createEmptyDiv());
     }
 
+    // สร้างวันในเดือน
     for (let day = 1; day <= daysInMonth; day++) {
         const dayDiv = document.createElement("div");
         dayDiv.classList.add("calendar-day");
@@ -149,12 +151,6 @@ function updateCalendar() {
     generateCalendar(today.getFullYear(), today.getMonth());
 }
 
-// เรียกใช้งานฟังก์ชันอัปเดตปฏิทินเมื่อโหลดหน้าเว็บ
-document.addEventListener("DOMContentLoaded", () => {
-    updateBookingList();
-    updateCalendar();
-});
-
 // ฟังก์ชันช่วยสร้าง div ว่างในปฏิทิน
 function createEmptyDiv() {
     const emptyDiv = document.createElement("div");
@@ -186,4 +182,10 @@ document.getElementById("booking-form").addEventListener("submit", function (e) 
     const description = document.getElementById("description").value.trim();
 
     if (room && date && time) {
-        saveBooking(room, date, time,
+        saveBooking(room, date, time, description);
+        updateBookingList();
+        updateCalendar();
+        alert("Booking request sent! Awaiting confirmation.");
+        this.reset();
+    } else {
+        alert("
