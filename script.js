@@ -44,8 +44,19 @@ document.getElementById("logout-btn").addEventListener("click", function () {
 
 // ฟังก์ชันบันทึกการจอง
 function saveBooking(room, date, time) {
-  const booking = { room, date, time, confirmed: false }; // เพิ่มสถานะ confirmed เป็น false
   const bookings = JSON.parse(localStorage.getItem("bookings")) || [];
+  
+  // ตรวจสอบว่ามีการจองห้องในวันและเวลานั้นแล้วหรือไม่
+  const existingBooking = bookings.find(
+    (booking) => booking.room === room && booking.date === date && booking.time === time
+  );
+
+  if (existingBooking) {
+    alert("This room is already booked for the selected time.");
+    return;
+  }
+
+  const booking = { room, date, time, confirmed: false }; // เพิ่มสถานะ confirmed เป็น false
   bookings.push(booking);
   localStorage.setItem("bookings", JSON.stringify(bookings));
 }
@@ -77,6 +88,7 @@ function updateBookingList() {
         bookings[index] = booking; // อัปเดตการจองที่ได้รับการยืนยัน
         localStorage.setItem("bookings", JSON.stringify(bookings));
         updateBookingList(); // อัปเดตรายการการจอง
+        alert("Booking confirmed!");
       };
       li.appendChild(confirmBtn);
     }
@@ -181,6 +193,6 @@ document.getElementById("booking-form").addEventListener("submit", function (e) 
   }
 });
 
-// เรียกอัปเดตครั้งแรกก
+// เรียกอัปเดตครั้งแรก
 updateBookingList();
 updateCalendar();
