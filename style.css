@@ -1,19 +1,21 @@
+/* พื้นฐาน (Global Styles) */
 body {
   font-family: Arial, sans-serif;
   margin: 0;
   padding: 0;
   background-color: #f4f4f9;
   color: #333;
-  box-sizing: border-box; /* ใช้ box-sizing เพื่อความแม่นยำในการคำนวณขนาด */
-  line-height: 1.6; /* เพิ่มการอ่านง่าย */
+  box-sizing: border-box;
+  line-height: 1.6;
 }
 
 *,
 *::before,
 *::after {
-  box-sizing: inherit; /* นำไปใช้กับทุกส่วน */
+  box-sizing: inherit;
 }
 
+/* ส่วนหัว (Header) */
 header {
   background-color: #4CAF50;
   color: white;
@@ -21,6 +23,7 @@ header {
   padding: 1rem 0;
 }
 
+/* เนื้อหา (Main Content) */
 main {
   margin: 20px auto;
   width: 90%;
@@ -31,6 +34,7 @@ main {
   box-shadow: 0 2px 5px rgba(0, 0, 0, 0.1);
 }
 
+/* ฟอร์ม (Form Styles) */
 form {
   margin-bottom: 20px;
 }
@@ -76,9 +80,10 @@ form button:hover {
 }
 
 form textarea {
-  resize: vertical; /* อนุญาตให้ปรับขนาดแนวตั้ง */
+  resize: vertical;
 }
 
+/* รายการการจอง */
 #booking-list ul {
   list-style: none;
   padding: 0;
@@ -94,23 +99,20 @@ form textarea {
   font-size: 0.9rem;
 }
 
+/* ปฏิทิน (Calendar Styles) */
 #calendar-container {
   display: grid;
-  grid-template-columns: repeat(7, 1fr);
+  grid-template-columns: repeat(7, 1fr); /* 7 คอลัมน์สำหรับแต่ละวัน */
   gap: 5px;
-  margin-top: 20px;
 }
 
-.calendar-day .description {
-  font-size: 0.8rem;
-  color: #555;
-  margin-top: 5px;
+.calendar-day {
+  border: 1px solid #ccc;
+  padding: 10px;
+  text-align: center;
   background-color: #f9f9f9;
-  border-radius: 4px;
-  padding: 3px;
-  display: block;
-  word-wrap: break-word; /* ป้องกันข้อความยาวล้น */
-
+  position: relative;
+  transition: transform 0.2s ease, background-color 0.3s ease;
 }
 
 .calendar-day:hover {
@@ -120,15 +122,27 @@ form textarea {
 }
 
 .calendar-day .booking {
-  font-size: 0.85rem;
+  display: block;
   margin-top: 5px;
+  font-size: 0.85rem;
   color: #007bff;
   background-color: #e3f2fd;
   border-radius: 4px;
   padding: 3px 6px;
-  display: inline-block;
 }
 
+.calendar-day .description {
+  display: block;
+  font-size: 0.8rem;
+  color: #555;
+  margin-top: 5px;
+  background-color: #f9f9f9;
+  border-radius: 4px;
+  padding: 3px;
+  word-wrap: break-word;
+}
+
+/* เพิ่มหัวข้อของวันในปฏิทิน */
 #calendar-container::before {
   content: "Sun Mon Tue Wed Thu Fri Sat";
   display: grid;
@@ -140,7 +154,7 @@ form textarea {
   color: #555;
 }
 
-/* Responsive Design */
+/* การตอบสนอง (Responsive Design) */
 @media (max-width: 768px) {
   main {
     width: 95%;
