@@ -190,6 +190,49 @@ document.getElementById("booking-form").addEventListener("submit", function (e) 
     alert("Please fill in all required fields.");
   }
 });
+// ดึงองค์ประกอบที่ต้องใช้งาน
+const form = document.getElementById("booking-form");
+const calendarContainer = document.getElementById("calendar-container");
+
+// เก็บข้อมูลการจอง
+const bookings = [];
+
+// ฟังก์ชันเพิ่มการจอง
+form.addEventListener("submit", (e) => {
+  e.preventDefault();
+
+  const room = document.getElementById("room").value;
+  const date = document.getElementById("date").value;
+  const time = document.getElementById("time").value;
+  const description = document.getElementById("description").value;
+
+  // เพิ่มข้อมูลการจอง
+  bookings.push({ room, date, time, description });
+
+  // อัปเดตปฏิทิน
+  updateCalendar();
+});
+
+// ฟังก์ชันอัปเดตปฏิทิน
+function updateCalendar() {
+  calendarContainer.innerHTML = ""; // ล้างข้อมูลเก่า
+
+  bookings.forEach((booking) => {
+    // หาวันที่ในปฏิทินที่ตรงกับวันที่จอง
+    const calendarDay = document.createElement("div");
+    calendarDay.classList.add("calendar-day");
+
+    // เพิ่มรายละเอียดการจอง
+    calendarDay.innerHTML = `
+      <strong>${booking.room}</strong> <br>
+      <span>${booking.time}</span>
+      <span class="description">${booking.description || "No details"}</span>
+    `;
+
+    calendarContainer.appendChild(calendarDay);
+  });
+}
+
 
 // อัปเดตรายการและปฏิทินเมื่อเริ่มต้น
 updateBookingList();
