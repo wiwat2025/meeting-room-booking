@@ -219,3 +219,33 @@ function createEmptyDiv() {
   emptyDiv.classList.add("empty-day");
   return emptyDiv;
 }
+
+// ฟังก์ชันการล้างข้อมูลการจองทั้งหมด
+document.getElementById("clear-bookings-btn").addEventListener("click", () => {
+  if (confirm("Are you sure you want to clear all bookings?")) {
+    localStorage.removeItem("bookings");
+    alert("All bookings have been cleared.");
+    updateBookingList();  // รีเฟรชรายการการจอง
+    updateCalendar();  // รีเฟรชปฏิทิน
+  }
+});
+
+// ปรับการแสดงผลในฟังก์ชัน showApp() เพื่อให้แอดมินเห็นปุ่มล้างค่าจอง
+function showApp() {
+  document.getElementById("login-form").style.display = "none";
+  document.getElementById("app").style.display = "block";
+
+  document.getElementById("booking-form").style.display =
+    currentUser.role === "user" ? "block" : "none";
+
+  document.getElementById("add-room-form").style.display =
+    currentUser.role === "admin" ? "block" : "none";
+
+  document.getElementById("clear-bookings-container").style.display =
+    currentUser.role === "admin" ? "block" : "none";  // แสดงปุ่มล้างค่าจองสำหรับแอดมินเท่านั้น
+
+  updateRoomOptions();
+  updateBookingList();
+  updateCalendar();
+}
+
