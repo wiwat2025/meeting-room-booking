@@ -1,10 +1,10 @@
-// รายชื่อผู้ใช้
 const users = [
   { username: "admin", password: "admin123", role: "admin" },
   { username: "user1", password: "user123", role: "user" },
 ];
 
 let currentUser = null;
+let rooms = JSON.parse(localStorage.getItem("rooms")) || [];
 
 // ฟังก์ชันล็อกอิน
 document.getElementById("login-btn").addEventListener("click", () => {
@@ -15,6 +15,7 @@ document.getElementById("login-btn").addEventListener("click", () => {
 
   if (user) {
     currentUser = user;
+    document.getElementById("user-name").textContent = user.username;
     alert(`Welcome, ${user.username} (${user.role})!`);
     showApp();
   } else {
@@ -30,6 +31,10 @@ function showApp() {
   document.getElementById("booking-form").style.display =
     currentUser.role === "user" ? "block" : "none";
 
+  document.getElementById("add-room-form").style.display =
+    currentUser.role === "admin" ? "block" : "none";
+
+  updateRoomOptions();
   updateBookingList();
   updateCalendar();
 }
@@ -40,6 +45,34 @@ document.getElementById("logout-btn").addEventListener("click", () => {
   document.getElementById("login-form").style.display = "block";
   document.getElementById("app").style.display = "none";
 });
+
+// ฟังก์ชันเพิ่มห้องประชุม
+document.getElementById("add-room-btn").addEventListener("click", () => {
+  const roomName = document.getElementById("new-room-name").value.trim();
+  
+  if (roomName) {
+    rooms.push(roomName);
+    localStorage.setItem("rooms", JSON.stringify(rooms));
+    updateRoomOptions();  // อัปเดตตัวเลือกห้องประชุม
+    document.getElementById("new-room-name").value = '';  // รีเซ็ตฟอร์ม
+    alert(`Room "${roomName}" added successfully.`);
+  } else {
+    alert("Please enter a room name.");
+  }
+});
+
+// ฟังก์ชันอัปเดตตัวเลือกห้องในฟอร์มจอง
+function updateRoomOptions() {
+  const roomSelect = document.getElementById("room");
+  roomSelect.innerHTML = '';
+
+  rooms.forEach((room) => {
+    const option = document.createElement("option");
+    option.value = room;
+    option.textContent = room;
+    roomSelect.appendChild(option);
+  });
+}
 
 // ฟังก์ชันบันทึกการจอง
 function saveBooking(room, date, time, description = "") {
@@ -186,34 +219,3 @@ function createEmptyDiv() {
   emptyDiv.classList.add("empty-day");
   return emptyDiv;
 }
-
-// ฟังก์ชันสำหรับการจอง
-document.getElementById("booking-form").addEventListener("submit", function (e) {
-  e.preventDefault();
-
-  if (currentUser.role !== "user") {
-    alert("Only users can book rooms!");
-    return;
-  }
-
-  const room = document.getElementById("room").value.trim();
-  const date = document.getElementById("date").value;
-  const time = document.getElementById("time").value.trim();
-  const description = document.getElementById("description").value.trim();
-
-  if (room && date && time) {
-    saveBooking(room, date, time, description);
-    updateBookingList();
-    updateCalendar();
-    alert("Booking request sent! Awaiting confirmation.");
-    this.reset();
-  } else {
-    alert("Please fill in all required fields.");
-  }
-});
-
-// เรียกใช้งานฟังก์ชันอัปเดตปฏิทินเมื่อโหลดหน้าเว็บ
-document.addEventListener("DOMContentLoaded", () => {
-  updateBookingList();
-  updateCalendar();
-});
