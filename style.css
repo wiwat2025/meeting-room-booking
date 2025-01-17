@@ -101,14 +101,16 @@ form textarea {
   margin-top: 20px;
 }
 
-.calendar-day {
-  border: 1px solid #ddd;
-  padding: 10px;
-  text-align: center;
+.calendar-day .description {
+  font-size: 0.8rem;
+  color: #555;
+  margin-top: 5px;
   background-color: #f9f9f9;
-  position: relative;
   border-radius: 4px;
-  transition: background-color 0.3s ease, transform 0.2s ease;
+  padding: 3px;
+  display: block;
+  word-wrap: break-word; /* ป้องกันข้อความยาวล้น */
+
 }
 
 .calendar-day:hover {
