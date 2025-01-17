@@ -192,7 +192,88 @@ document.getElementById("booking-form").addEventListener("submit", function (e) 
     alert("Please fill in all fields.");
   }
 });
+// ฟังก์ชันบันทึกการจอง
+function saveBooking(room, date, time, description) {
+  const booking = { room, date, time, description: description || "", confirmed: false };
+  const bookings = JSON.parse(localStorage.getItem("bookings")) || [];
+  bookings.push(booking);
+  localStorage.setItem("bookings", JSON.stringify(bookings));
+}
+
+// ฟังก์ชันจัดการการจอง
+document.getElementById("booking-form").addEventListener("submit", function (e) {
+  e.preventDefault();
+
+  if (currentUser.role !== "user") {
+    alert("Only users can book rooms!");
+    return;
+  }
+
+  const room = document.getElementById("room").value.trim();
+  const date = document.getElementById("date").value;
+  const time = document.getElementById("time").value.trim();
+  const description = document.getElementById("description").value.trim();
+
+  if (room && date && time) {
+    saveBooking(room, date, time, description);
+    updateBookingList();
+    updateCalendar();
+    alert("Booking request sent! Awaiting confirmation.");
+    this.reset();
+  } else {
+    alert("Please fill in all required fields.");
+  }
+});
+
+// ฟังก์ชันอัปเดตรายการการจอง
+function updateBookingList() {
+  const bookingList = document.getElementById("list");
+  bookingList.innerHTML = "";
+
+  const bookings = JSON.parse(localStorage.getItem("bookings")) || [];
+  bookings.forEach((booking, index) => {
+    const li = document.createElement("li");
+    li.innerHTML = `
+      <div><strong>Room:</strong> ${booking.room}</div>
+      <div><strong>Date:</strong> ${booking.date}</div>
+      <div><strong>Time:</strong> ${booking.time}</div>
+      <div><strong>Description:</strong> ${booking.description || "N/A"}</div>
+      <div>${booking.confirmed ? "<strong>Status:</strong> Confirmed" : "<strong>Status:</strong> Pending Confirmation"}</div>
+    `;
+
+    // ปุ่มยืนยันและลบสำหรับแอดมิน
+    if (currentUser.role === "admin") {
+      if (!booking.confirmed) {
+        const confirmBtn = document.createElement("button");
+        confirmBtn.textContent = "Confirm Booking";
+        confirmBtn.style.marginRight = "10px";
+        confirmBtn.onclick = () => {
+          booking.confirmed = true;
+          const bookings = JSON.parse(localStorage.getItem("bookings"));
+          bookings[index] = booking;
+          localStorage.setItem("bookings", JSON.stringify(bookings));
+          updateBookingList();
+        };
+        li.appendChild(confirmBtn);
+      }
+
+      const deleteBtn = document.createElement("button");
+      deleteBtn.textContent = "Cancel";
+      deleteBtn.onclick = () => {
+        const bookings = JSON.parse(localStorage.getItem("bookings"));
+        bookings.splice(index, 1);
+        localStorage.setItem("bookings", JSON.stringify(bookings));
+        updateBookingList();
+        updateCalendar();
+      };
+      li.appendChild(deleteBtn);
+    }
+
+    bookingList.appendChild(li);
+  });
+}
 
 // เรียกอัปเดตครั้งแรก
 updateBookingList();
 updateCalendar();
+
