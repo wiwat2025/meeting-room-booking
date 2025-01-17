@@ -15,7 +15,7 @@ header {
 
 main {
   margin: 20px auto;
-  width: 80%;
+  width: 90%;
   max-width: 600px;
   background: white;
   padding: 20px;
@@ -30,14 +30,18 @@ form {
 form label {
   display: block;
   margin-bottom: 5px;
+  font-weight: bold;
 }
 
-form input, form select, form button {
+form input,
+form select,
+form button {
   width: 100%;
   padding: 10px;
   margin-bottom: 15px;
   border: 1px solid #ccc;
   border-radius: 4px;
+  font-size: 1rem;
 }
 
 form button {
@@ -45,6 +49,7 @@ form button {
   color: white;
   border: none;
   cursor: pointer;
+  transition: background-color 0.3s ease;
 }
 
 form button:hover {
@@ -54,6 +59,7 @@ form button:hover {
 #booking-list ul {
   list-style: none;
   padding: 0;
+  margin: 0;
 }
 
 #booking-list li {
@@ -62,6 +68,7 @@ form button:hover {
   padding: 10px;
   margin-bottom: 5px;
   border-radius: 4px;
+  font-size: 0.9rem;
 }
 
 #calendar-container {
@@ -77,15 +84,26 @@ form button:hover {
   text-align: center;
   background-color: #f9f9f9;
   position: relative;
+  border-radius: 4px;
+  transition: background-color 0.3s ease, transform 0.2s ease;
+}
+
+.calendar-day:hover {
+  background-color: #dff0d8;
+  transform: scale(1.05);
+  cursor: pointer;
 }
 
 .calendar-day .booking {
-  font-size: 0.9rem;
+  font-size: 0.85rem;
   margin-top: 5px;
   color: #007bff;
-  display: block;
+  background-color: #e3f2fd;
+  border-radius: 4px;
+  padding: 3px 6px;
+  display: inline-block;
 }
-/* เพิ่ม Header ของปฏิทิน */
+
 #calendar-container::before {
   content: "Sun Mon Tue Wed Thu Fri Sat";
   display: grid;
@@ -93,40 +111,27 @@ form button:hover {
   font-weight: bold;
   text-align: center;
   margin-bottom: 10px;
+  font-size: 0.9rem;
+  color: #555;
 }
 
-/* เปลี่ยนสีพื้นหลังวันที่มีการจอง */
-.calendar-day .booking {
-  background-color: #e3f2fd;
-  color: #0056b3;
-  border-radius: 4px;
-  padding: 5px;
-}
-
-/* เพิ่ม Hover Effect ในปฏิทิน */
-.calendar-day:hover {
-  background-color: #dff0d8;
-  cursor: pointer;
-}
-
-/* เพิ่ม Responsive Design */
+/* Responsive Design */
 @media (max-width: 768px) {
   main {
-    width: 90%;
+    width: 95%;
   }
 
   #calendar-container {
-    grid-template-columns: repeat(3, 1fr); /* 3 คอลัมน์ในหน้าจอเล็ก */
+    grid-template-columns: repeat(4, 1fr); /* 4 คอลัมน์สำหรับหน้าจอขนาดกลาง */
   }
 
   #calendar-container::before {
-    display: none; /* ซ่อนชื่อวันในหน้าจอเล็ก */
+    display: none; /* ซ่อนหัวข้อในหน้าจอขนาดกลาง */
   }
 }
 
 @media (max-width: 480px) {
   #calendar-container {
-    grid-template-columns: 1fr; /* แสดงวันทีละคอลัมน์ในหน้าจอมือถือ */
+    grid-template-columns: 1fr; /* 1 คอลัมน์สำหรับหน้าจอมือถือ */
   }
 }
-
