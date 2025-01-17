@@ -1,67 +1,46 @@
 <!DOCTYPE html>
-<html lang="en">
+<html lang="th">
 <head>
-  <meta charset="UTF-8">
-  <meta name="viewport" content="width=device-width, initial-scale=1.0">
-  <title>Meeting Room Booking</title>
-  <link rel="stylesheet" href="style.css">
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>ระบบจองห้องประชุม</title>
+    <link rel="stylesheet" href="style.css">
 </head>
 <body>
-  <!-- ฟอร์มล็อกอิน -->
-  <div id="login-form">
-    <h2>Login</h2>
-    <label for="username">Username:</label>
-    <input type="text" id="username" required>
-    <label for="password">Password:</label>
-    <input type="password" id="password" required>
-    <button id="login-btn">Login</button>
-  </div>
+    <div id="login-form">
+        <h2>Login</h2>
+        <label for="username">Username:</label>
+        <input type="text" id="username" required><br>
+        <label for="password">Password:</label>
+        <input type="password" id="password" required><br>
+        <button id="login-btn">Login</button>
+    </div>
 
-  <!-- ระบบจองห้อง -->
-  <div id="app" style="display: none;">
-    <header>
-      <h1>Meeting Room Booking</h1>
-      <button id="logout-btn">Logout</button>
-    </header>
-    <main>
-      <!-- ฟอร์มการจอง -->
-     <form id="booking-form">
-  <label for="room">Select Room:</label>
-  <select id="room" required>
-    <option value="Room A">Room A</option>
-    <option value="Room B">Room B</option>
-    <option value="Room C">Room C</option>
-  </select>
+    <div id="app" style="display: none;">
+        <button id="logout-btn">Logout</button>
 
-  <label for="date">Date:</label>
-  <input type="date" id="date" required>
+        <div id="booking-form">
+            <h2>Book a Room</h2>
+            <form id="booking-form">
+                <label for="room">Room:</label>
+                <input type="text" id="room" required><br>
+                <label for="date">Date (YYYY-MM-DD):</label>
+                <input type="date" id="date" required><br>
+                <label for="time">Time:</label>
+                <input type="time" id="time" required><br>
+                <label for="description">Description:</label>
+                <textarea id="description"></textarea><br>
+                <button type="submit">Book</button>
+            </form>
+        </div>
 
-  <label for="time">Time:</label>
-  <input type="time" id="time" required>
-
-  <label for="description">Description (Optional):</label>
-  <textarea id="description" rows="3" placeholder="Add more details about the booking"></textarea>
-
-  <button type="submit">Book Room</button>
-</form>
-
-
-      <!-- รายการการจอง -->
-      <section id="booking-list">
-        <h2>Booking List</h2>
+        <h3>Booking List</h3>
         <ul id="list"></ul>
-      </section>
 
-   <!-- ปฏิทินแสดงผลการจอง -->
-<section id="calendar">
-  <h2>Booking Calendar</h2>
-  <div id="calendar-container"></div>
-</section>
+        <h3>Calendar</h3>
+        <div id="calendar-container"></div>
+    </div>
 
-
-    </main>
-  </div>
-
-  <script src="script.js"></script>
+    <script src="script.js"></script>
 </body>
 </html>
