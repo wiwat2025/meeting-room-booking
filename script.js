@@ -140,6 +140,26 @@ function generateCalendar(year, month) {
     calendarContainer.appendChild(emptyDiv);
   }
 
+  function saveBooking(room, date, time, description = "") {
+  const bookings = JSON.parse(localStorage.getItem("bookings")) || [];
+
+  if (bookings.some((b) => b.room === room && b.date === date && b.time === time)) {
+    alert("This room is already booked for the selected time.");
+    return;
+  }
+
+  bookings.push({
+    room,
+    date,
+    time,
+    description: description || "No details",
+    confirmed: false,
+  });
+
+  localStorage.setItem("bookings", JSON.stringify(bookings)); // บันทึกการจองใน localStorage
+}
+
+
   // สร้างวันในเดือน
   for (let day = 1; day <= daysInMonth; day++) {
     const dayDiv = document.createElement("div");
