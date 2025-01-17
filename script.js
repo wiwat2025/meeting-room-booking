@@ -2,6 +2,7 @@ const users = [
   { username: "admin", password: "admin123", role: "admin" },
   { username: "user1", password: "user123", role: "user" },
 ];
+
 let currentUser = null;
 
 // ฟังก์ชันล็อกอิน
@@ -20,15 +21,16 @@ document.getElementById("login-btn").addEventListener("click", function () {
   }
 });
 
-// ฟังก์ชันแสดงหน้าเว็บ
+// ฟังก์ชันแสดงหน้าแอป
 function showApp() {
   document.getElementById("login-form").style.display = "none";
   document.getElementById("app").style.display = "block";
 
-  if (currentUser.role !== "admin") {
-    document.getElementById("booking-form").style.display = "block"; // ให้ผู้ใช้ทั่วไปสามารถเพิ่มได้
+  // แสดงหรือซ่อนฟอร์มการจองตามบทบาท
+  if (currentUser.role === "user") {
+    document.getElementById("booking-form").style.display = "block";
   } else {
-    document.getElementById("booking-form").style.display = "none"; // แอดมินไม่ต้องการฟอร์มเพิ่มการจอง
+    document.getElementById("booking-form").style.display = "none";
   }
 
   updateBookingList();
@@ -43,21 +45,23 @@ document.getElementById("logout-btn").addEventListener("click", function () {
 });
 
 // ฟังก์ชันบันทึกการจอง
-function saveBooking(room, date, time) {
+function saveBooking(room, date, time, description = "") {
   const bookings = JSON.parse(localStorage.getItem("bookings")) || [];
-  
-  // ตรวจสอบว่ามีการจองห้องในวันและเวลานั้นแล้วหรือไม่
-  const existingBooking = bookings.find(
-    (booking) => booking.room === room && booking.date === date && booking.time === time
-  );
 
-  if (existingBooking) {
+  // ตรวจสอบว่ามีการจองซ้ำหรือไม่
+  if (bookings.some((b) => b.room === room && b.date === date && b.time === time)) {
     alert("This room is already booked for the selected time.");
     return;
   }
 
-  const booking = { room, date, time, confirmed: false }; // เพิ่มสถานะ confirmed เป็น false
-  bookings.push(booking);
+  const newBooking = {
+    room,
+    date,
+    time,
+    description,
+    confirmed: false,
+  };
+  bookings.push(newBooking);
   localStorage.setItem("bookings", JSON.stringify(bookings));
 }
 
@@ -69,58 +73,24 @@ function updateBookingList() {
   const bookings = JSON.parse(localStorage.getItem("bookings")) || [];
   bookings.forEach((booking, index) => {
     const li = document.createElement("li");
-    li.textContent = `Room: ${booking.room}, Date: ${booking.date}, Time: ${booking.time}`;
-    
-    if (booking.confirmed) {
-      li.textContent += " (Confirmed)";
-    } else {
-      li.textContent += " (Pending Confirmation)";
-    }
+    li.innerHTML = `
+      <div><strong>Room:</strong> ${booking.room}</div>
+      <div><strong>Date:</strong> ${booking.date}</div>
+      <div><strong>Time:</strong> ${booking.time}</div>
+      <div><strong>Description:</strong> ${booking.description || "N/A"}</div>
+      <div><strong>Status:</strong> ${booking.confirmed ? "Confirmed" : "Pending Confirmation"}</div>
+    `;
 
-    // หากเป็นแอดมินจะสามารถยืนยันการจองห้อง
-    if (currentUser.role === "admin" && !booking.confirmed) {
-      const confirmBtn = document.createElement("button");
-      confirmBtn.textContent = "Confirm Booking";
-      confirmBtn.style.marginLeft = "10px";
-      confirmBtn.onclick = () => {
-        booking.confirmed = true;
-        const bookings = JSON.parse(localStorage.getItem("bookings"));
-        bookings[index] = booking; // อัปเดตการจองที่ได้รับการยืนยัน
-        localStorage.setItem("bookings", JSON.stringify(bookings));
-        updateBookingList(); // อัปเดตรายการการจอง
-        alert("Booking confirmed!");
-      };
-      li.appendChild(confirmBtn);
-    }
-
-    // แอดมินสามารถลบการจองได้
     if (currentUser.role === "admin") {
-      const deleteBtn = document.createElement("button");
-      deleteBtn.textContent = "Cancel";
-      deleteBtn.style.marginLeft = "10px";
-      deleteBtn.onclick = () => {
-        const bookings = JSON.parse(localStorage.getItem("bookings"));
-        bookings.splice(index, 1); // ลบการจอง
-        localStorage.setItem("bookings", JSON.stringify(bookings));
-        updateBookingList(); // อัปเดตรายการการจอง
-        updateCalendar(); // อัปเดตปฏิทิน
-      };
-      li.appendChild(deleteBtn);
-    }
+      // ปุ่มยืนยันการจอง
+      if (!booking.confirmed) {
+        const confirmBtn = createButton("Confirm", () => confirmBooking(index));
+        li.appendChild(confirmBtn);
+      }
 
-    // หากเป็นผู้ใช้งานทั่วไปจะไม่สามารถลบหรือลงทะเบียนการจองได้
-    if (currentUser.role === "user" && !booking.confirmed) {
-      const cancelBtn = document.createElement("button");
-      cancelBtn.textContent = "Cancel My Booking";
-      cancelBtn.style.marginLeft = "10px";
-      cancelBtn.onclick = () => {
-        const bookings = JSON.parse(localStorage.getItem("bookings"));
-        bookings.splice(index, 1); // ลบการจองของผู้ใช้งานทั่วไป
-        localStorage.setItem("bookings", JSON.stringify(bookings));
-        updateBookingList(); // อัปเดตรายการการจอง
-        updateCalendar(); // อัปเดตปฏิทิน
-      };
-      li.appendChild(cancelBtn);
+      // ปุ่มยกเลิกการจอง
+      const deleteBtn = createButton("Cancel", () => deleteBooking(index));
+      li.appendChild(deleteBtn);
     }
 
     bookingList.appendChild(li);
@@ -169,35 +139,31 @@ function updateCalendar() {
   generateCalendar(today.getFullYear(), today.getMonth());
 }
 
-// ฟังก์ชันจัดการการจอง
-document.getElementById("booking-form").addEventListener("submit", function (e) {
-  e.preventDefault();
-
-  if (currentUser.role !== "user") {
-    alert("Only users can book rooms!");
-    return;
-  }
-
-  const room = document.getElementById("room").value.trim();
-  const date = document.getElementById("date").value;
-  const time = document.getElementById("time").value.trim();
-
-  if (room && date && time) {
-    saveBooking(room, date, time);
-    updateBookingList();
-    updateCalendar();
-    alert("Booking request sent! Awaiting confirmation.");
-    this.reset();
-  } else {
-    alert("Please fill in all fields.");
-  }
-});
-// ฟังก์ชันบันทึกการจอง
-function saveBooking(room, date, time, description) {
-  const booking = { room, date, time, description: description || "", confirmed: false };
-  const bookings = JSON.parse(localStorage.getItem("bookings")) || [];
-  bookings.push(booking);
+// ฟังก์ชันยืนยันการจอง
+function confirmBooking(index) {
+  const bookings = JSON.parse(localStorage.getItem("bookings"));
+  bookings[index].confirmed = true;
   localStorage.setItem("bookings", JSON.stringify(bookings));
+  updateBookingList();
+  alert("Booking confirmed!");
+}
+
+// ฟังก์ชันลบการจอง
+function deleteBooking(index) {
+  const bookings = JSON.parse(localStorage.getItem("bookings"));
+  bookings.splice(index, 1);
+  localStorage.setItem("bookings", JSON.stringify(bookings));
+  updateBookingList();
+  updateCalendar();
+}
+
+// ฟังก์ชันช่วยสร้างปุ่ม
+function createButton(text, onClick) {
+  const button = document.createElement("button");
+  button.textContent = text;
+  button.style.marginLeft = "10px";
+  button.onclick = onClick;
+  return button;
 }
 
 // ฟังก์ชันจัดการการจอง
@@ -225,55 +191,6 @@ document.getElementById("booking-form").addEventListener("submit", function (e) 
   }
 });
 
-// ฟังก์ชันอัปเดตรายการการจอง
-function updateBookingList() {
-  const bookingList = document.getElementById("list");
-  bookingList.innerHTML = "";
-
-  const bookings = JSON.parse(localStorage.getItem("bookings")) || [];
-  bookings.forEach((booking, index) => {
-    const li = document.createElement("li");
-    li.innerHTML = `
-      <div><strong>Room:</strong> ${booking.room}</div>
-      <div><strong>Date:</strong> ${booking.date}</div>
-      <div><strong>Time:</strong> ${booking.time}</div>
-      <div><strong>Description:</strong> ${booking.description || "N/A"}</div>
-      <div>${booking.confirmed ? "<strong>Status:</strong> Confirmed" : "<strong>Status:</strong> Pending Confirmation"}</div>
-    `;
-
-    // ปุ่มยืนยันและลบสำหรับแอดมิน
-    if (currentUser.role === "admin") {
-      if (!booking.confirmed) {
-        const confirmBtn = document.createElement("button");
-        confirmBtn.textContent = "Confirm Booking";
-        confirmBtn.style.marginRight = "10px";
-        confirmBtn.onclick = () => {
-          booking.confirmed = true;
-          const bookings = JSON.parse(localStorage.getItem("bookings"));
-          bookings[index] = booking;
-          localStorage.setItem("bookings", JSON.stringify(bookings));
-          updateBookingList();
-        };
-        li.appendChild(confirmBtn);
-      }
-
-      const deleteBtn = document.createElement("button");
-      deleteBtn.textContent = "Cancel";
-      deleteBtn.onclick = () => {
-        const bookings = JSON.parse(localStorage.getItem("bookings"));
-        bookings.splice(index, 1);
-        localStorage.setItem("bookings", JSON.stringify(bookings));
-        updateBookingList();
-        updateCalendar();
-      };
-      li.appendChild(deleteBtn);
-    }
-
-    bookingList.appendChild(li);
-  });
-}
-
-// เรียกอัปเดตครั้งแรก
+// อัปเดตรายการและปฏิทินเมื่อเริ่มต้น
 updateBookingList();
 updateCalendar();
-
