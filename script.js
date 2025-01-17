@@ -6,7 +6,7 @@ const users = [
 let currentUser = null;
 
 // ฟังก์ชันล็อกอิน
-document.getElementById("login-btn").addEventListener("click", function () {
+document.getElementById("login-btn").addEventListener("click", () => {
   const username = document.getElementById("username").value.trim();
   const password = document.getElementById("password").value.trim();
 
@@ -26,7 +26,6 @@ function showApp() {
   document.getElementById("login-form").style.display = "none";
   document.getElementById("app").style.display = "block";
 
-  // แสดงหรือซ่อนฟอร์มการจองตามบทบาท
   document.getElementById("booking-form").style.display =
     currentUser.role === "user" ? "block" : "none";
 
@@ -35,7 +34,7 @@ function showApp() {
 }
 
 // ฟังก์ชันล็อกเอาต์
-document.getElementById("logout-btn").addEventListener("click", function () {
+document.getElementById("logout-btn").addEventListener("click", () => {
   currentUser = null;
   document.getElementById("login-form").style.display = "block";
   document.getElementById("app").style.display = "none";
@@ -105,7 +104,9 @@ function generateCalendar(year, month) {
 
     const bookings = JSON.parse(localStorage.getItem("bookings")) || [];
     bookings.forEach((booking) => {
-      if (booking.date === `${year}-${String(month + 1).padStart(2, "0")}-${String(day).padStart(2, "0")}`) {
+      const [bookingYear, bookingMonth, bookingDay] = booking.date.split("-").map(Number);
+
+      if (bookingYear === year && bookingMonth === month + 1 && bookingDay === day) {
         const bookingSpan = document.createElement("span");
         bookingSpan.classList.add("booking");
         bookingSpan.textContent = `${booking.room} (${booking.time})`;
@@ -183,5 +184,8 @@ document.getElementById("booking-form").addEventListener("submit", function (e) 
   }
 });
 
-updateBookingList();
-updateCalendar();
+// อัปเดตปฏิทินเมื่อโหลดหน้าเว็บ
+document.addEventListener("DOMContentLoaded", () => {
+  updateBookingList();
+  updateCalendar();
+});
