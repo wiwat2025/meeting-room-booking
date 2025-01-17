@@ -85,4 +85,48 @@ form button:hover {
   color: #007bff;
   display: block;
 }
+/* เพิ่ม Header ของปฏิทิน */
+#calendar-container::before {
+  content: "Sun Mon Tue Wed Thu Fri Sat";
+  display: grid;
+  grid-template-columns: repeat(7, 1fr);
+  font-weight: bold;
+  text-align: center;
+  margin-bottom: 10px;
+}
+
+/* เปลี่ยนสีพื้นหลังวันที่มีการจอง */
+.calendar-day .booking {
+  background-color: #e3f2fd;
+  color: #0056b3;
+  border-radius: 4px;
+  padding: 5px;
+}
+
+/* เพิ่ม Hover Effect ในปฏิทิน */
+.calendar-day:hover {
+  background-color: #dff0d8;
+  cursor: pointer;
+}
+
+/* เพิ่ม Responsive Design */
+@media (max-width: 768px) {
+  main {
+    width: 90%;
+  }
+
+  #calendar-container {
+    grid-template-columns: repeat(3, 1fr); /* 3 คอลัมน์ในหน้าจอเล็ก */
+  }
+
+  #calendar-container::before {
+    display: none; /* ซ่อนชื่อวันในหน้าจอเล็ก */
+  }
+}
+
+@media (max-width: 480px) {
+  #calendar-container {
+    grid-template-columns: 1fr; /* แสดงวันทีละคอลัมน์ในหน้าจอมือถือ */
+  }
+}
 
