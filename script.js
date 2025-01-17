@@ -188,4 +188,6 @@ document.getElementById("booking-form").addEventListener("submit", function (e) 
         alert("Booking request sent! Awaiting confirmation.");
         this.reset();
     } else {
-        alert("
+        alert("Please fill in all required fields.");
+    }
+});
