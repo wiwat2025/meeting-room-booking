@@ -77,6 +77,10 @@ function updateBookingList() {
     if (currentUser.role === "admin" && !booking.confirmed) {
       li.appendChild(createButton("Confirm", () => confirmBooking(index)));
       li.appendChild(createButton("Cancel", () => cancelBooking(index)));
+      li.appendChild(createButton("Edit", () => editBooking(index)));
+      li.appendChild(createButton("Delete", () => deleteBooking(index)));
+    } else if (currentUser.role === "user" && !booking.confirmed) {
+      li.appendChild(createButton("View", () => alert("View booking details")));
     }
 
     bookingList.appendChild(li);
@@ -94,6 +98,37 @@ function confirmBooking(index) {
 
 // ฟังก์ชันยกเลิกการจอง
 function cancelBooking(index) {
+  const bookings = JSON.parse(localStorage.getItem("bookings"));
+  bookings.splice(index, 1);
+  localStorage.setItem("bookings", JSON.stringify(bookings));
+  updateBookingList();
+  updateCalendar();
+}
+
+// ฟังก์ชันแก้ไขการจอง
+function editBooking(index) {
+  const bookings = JSON.parse(localStorage.getItem("bookings"));
+  const booking = bookings[index];
+  const newRoom = prompt("Edit Room:", booking.room);
+  const newDate = prompt("Edit Date:", booking.date);
+  const newTime = prompt("Edit Time:", booking.time);
+  const newDescription = prompt("Edit Description:", booking.description);
+
+  bookings[index] = {
+    room: newRoom || booking.room,
+    date: newDate || booking.date,
+    time: newTime || booking.time,
+    description: newDescription || booking.description,
+    confirmed: booking.confirmed,
+  };
+
+  localStorage.setItem("bookings", JSON.stringify(bookings));
+  updateBookingList();
+  updateCalendar();
+}
+
+// ฟังก์ชันลบการจอง
+function deleteBooking(index) {
   const bookings = JSON.parse(localStorage.getItem("bookings"));
   bookings.splice(index, 1);
   localStorage.setItem("bookings", JSON.stringify(bookings));
@@ -144,4 +179,6 @@ function generateCalendar(year, month) {
 
 // ฟังก์ชันอัปเดตปฏิทิน
 function updateCalendar() {
-  const today = new
+  const today = new Date();
+  generateCalendar(today.getFullYear(), today.getMonth());
+}
