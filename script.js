@@ -27,11 +27,8 @@ function showApp() {
   document.getElementById("app").style.display = "block";
 
   // แสดงหรือซ่อนฟอร์มการจองตามบทบาท
-  if (currentUser.role === "user") {
-    document.getElementById("booking-form").style.display = "block";
-  } else {
-    document.getElementById("booking-form").style.display = "none";
-  }
+  document.getElementById("booking-form").style.display =
+    currentUser.role === "user" ? "block" : "none";
 
   updateBookingList();
   updateCalendar();
@@ -48,20 +45,18 @@ document.getElementById("logout-btn").addEventListener("click", function () {
 function saveBooking(room, date, time, description = "") {
   const bookings = JSON.parse(localStorage.getItem("bookings")) || [];
 
-  // ตรวจสอบว่ามีการจองซ้ำหรือไม่
   if (bookings.some((b) => b.room === room && b.date === date && b.time === time)) {
     alert("This room is already booked for the selected time.");
     return;
   }
 
-  const newBooking = {
+  bookings.push({
     room,
     date,
     time,
-    description,
+    description: description || "No details",
     confirmed: false,
-  };
-  bookings.push(newBooking);
+  });
   localStorage.setItem("bookings", JSON.stringify(bookings));
 }
 
@@ -77,20 +72,13 @@ function updateBookingList() {
       <div><strong>Room:</strong> ${booking.room}</div>
       <div><strong>Date:</strong> ${booking.date}</div>
       <div><strong>Time:</strong> ${booking.time}</div>
-      <div><strong>Description:</strong> ${booking.description || "N/A"}</div>
+      <div><strong>Description:</strong> ${booking.description}</div>
       <div><strong>Status:</strong> ${booking.confirmed ? "Confirmed" : "Pending Confirmation"}</div>
     `;
 
-    if (currentUser.role === "admin") {
-      // ปุ่มยืนยันการจอง
-      if (!booking.confirmed) {
-        const confirmBtn = createButton("Confirm", () => confirmBooking(index));
-        li.appendChild(confirmBtn);
-      }
-
-      // ปุ่มยกเลิกการจอง
-      const deleteBtn = createButton("Cancel", () => deleteBooking(index));
-      li.appendChild(deleteBtn);
+    if (currentUser.role === "admin" && !booking.confirmed) {
+      li.appendChild(createButton("Confirm", () => confirmBooking(index)));
+      li.appendChild(createButton("Cancel", () => deleteBooking(index)));
     }
 
     bookingList.appendChild(li);
@@ -106,14 +94,10 @@ function generateCalendar(year, month) {
   const firstDayIndex = date.getDay();
   const daysInMonth = new Date(year, month + 1, 0).getDate();
 
-  // เพิ่มช่องว่างก่อนวันแรกของเดือน
   for (let i = 0; i < firstDayIndex; i++) {
-    const emptyDiv = document.createElement("div");
-    emptyDiv.classList.add("empty-day");
-    calendarContainer.appendChild(emptyDiv);
+    calendarContainer.appendChild(createEmptyDiv());
   }
 
-  // สร้างวันในเดือน
   for (let day = 1; day <= daysInMonth; day++) {
     const dayDiv = document.createElement("div");
     dayDiv.classList.add("calendar-day");
@@ -126,6 +110,13 @@ function generateCalendar(year, month) {
         bookingSpan.classList.add("booking");
         bookingSpan.textContent = `${booking.room} (${booking.time})`;
         dayDiv.appendChild(bookingSpan);
+
+        if (booking.description) {
+          const descSpan = document.createElement("span");
+          descSpan.classList.add("description");
+          descSpan.textContent = booking.description;
+          dayDiv.appendChild(descSpan);
+        }
       }
     });
 
@@ -133,10 +124,11 @@ function generateCalendar(year, month) {
   }
 }
 
-// ฟังก์ชันอัปเดตปฏิทิน
-function updateCalendar() {
-  const today = new Date();
-  generateCalendar(today.getFullYear(), today.getMonth());
+// ฟังก์ชันช่วยสร้าง div ว่างในปฏิทิน
+function createEmptyDiv() {
+  const emptyDiv = document.createElement("div");
+  emptyDiv.classList.add("empty-day");
+  return emptyDiv;
 }
 
 // ฟังก์ชันยืนยันการจอง
@@ -166,7 +158,7 @@ function createButton(text, onClick) {
   return button;
 }
 
-// ฟังก์ชันจัดการการจอง
+// อัปเดตปฏิทินเมื่อเริ่มต้น
 document.getElementById("booking-form").addEventListener("submit", function (e) {
   e.preventDefault();
 
@@ -190,50 +182,6 @@ document.getElementById("booking-form").addEventListener("submit", function (e) 
     alert("Please fill in all required fields.");
   }
 });
-// ดึงองค์ประกอบที่ต้องใช้งาน
-const form = document.getElementById("booking-form");
-const calendarContainer = document.getElementById("calendar-container");
 
-// เก็บข้อมูลการจอง
-const bookings = [];
-
-// ฟังก์ชันเพิ่มการจอง
-form.addEventListener("submit", (e) => {
-  e.preventDefault();
-
-  const room = document.getElementById("room").value;
-  const date = document.getElementById("date").value;
-  const time = document.getElementById("time").value;
-  const description = document.getElementById("description").value;
-
-  // เพิ่มข้อมูลการจอง
-  bookings.push({ room, date, time, description });
-
-  // อัปเดตปฏิทิน
-  updateCalendar();
-});
-
-// ฟังก์ชันอัปเดตปฏิทิน
-function updateCalendar() {
-  calendarContainer.innerHTML = ""; // ล้างข้อมูลเก่า
-
-  bookings.forEach((booking) => {
-    // หาวันที่ในปฏิทินที่ตรงกับวันที่จอง
-    const calendarDay = document.createElement("div");
-    calendarDay.classList.add("calendar-day");
-
-    // เพิ่มรายละเอียดการจอง
-    calendarDay.innerHTML = `
-      <strong>${booking.room}</strong> <br>
-      <span>${booking.time}</span>
-      <span class="description">${booking.description || "No details"}</span>
-    `;
-
-    calendarContainer.appendChild(calendarDay);
-  });
-}
-
-
-// อัปเดตรายการและปฏิทินเมื่อเริ่มต้น
 updateBookingList();
 updateCalendar();
