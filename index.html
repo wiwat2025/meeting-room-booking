@@ -3,36 +3,52 @@
 <head>
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
-  <title>Meeting Room Booking System</title>
+  <title>Room Booking System</title>
   <link rel="stylesheet" href="style.css">
 </head>
 <body>
   <div id="login-form">
     <h2>Login</h2>
-    <input type="text" id="username" placeholder="Username" required />
-    <input type="password" id="password" placeholder="Password" required />
+    <input type="text" id="username" placeholder="Username" required>
+    <input type="password" id="password" placeholder="Password" required>
     <button id="login-btn">Login</button>
   </div>
 
   <div id="app" style="display: none;">
-    <h1>Meeting Room Booking System</h1>
+    <h2>Welcome <span id="user-name"></span></h2>
     <button id="logout-btn">Logout</button>
 
-    <div id="booking-form">
-      <h3>Book a Meeting Room</h3>
-      <form id="booking-form">
-        <input type="text" id="room" placeholder="Room" required />
-        <input type="date" id="date" required />
-        <input type="time" id="time" required />
-        <input type="text" id="description" placeholder="Description" />
-        <button type="submit">Book Room</button>
+    <div id="calendar-container"></div>
+
+    <!-- เพิ่มห้องประชุม (สำหรับแอดมินเท่านั้น) -->
+    <div id="add-room-form" style="display: none;">
+      <h3>Add a Room</h3>
+      <input type="text" id="new-room-name" placeholder="Room Name" required>
+      <button id="add-room-btn">Add Room</button>
+    </div>
+
+    <!-- Booking Form (Visible only to user) -->
+    <div id="booking-form" style="display: none;">
+      <h3>Book a Room</h3>
+      <form>
+        <label for="room">Room:</label>
+        <select id="room" required></select>
+        
+        <label for="date">Date:</label>
+        <input type="date" id="date" required>
+
+        <label for="time">Time:</label>
+        <input type="time" id="time" required>
+
+        <label for="description">Description:</label>
+        <textarea id="description"></textarea>
+
+        <button type="submit">Submit</button>
       </form>
     </div>
 
-    <h3>Your Bookings</h3>
+    <!-- Booking List -->
     <ul id="list"></ul>
-
-    <div id="calendar-container"></div>
   </div>
 
   <script src="script.js"></script>
