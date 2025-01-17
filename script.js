@@ -6,8 +6,8 @@ let currentUser = null;
 
 // ฟังก์ชันล็อกอิน
 document.getElementById("login-btn").addEventListener("click", function () {
-  const username = document.getElementById("username").value;
-  const password = document.getElementById("password").value;
+  const username = document.getElementById("username").value.trim();
+  const password = document.getElementById("password").value.trim();
 
   const user = users.find((u) => u.username === username && u.password === password);
 
@@ -84,11 +84,14 @@ function generateCalendar(year, month) {
   const firstDayIndex = date.getDay();
   const daysInMonth = new Date(year, month + 1, 0).getDate();
 
+  // เพิ่มช่องว่างก่อนวันแรกของเดือน
   for (let i = 0; i < firstDayIndex; i++) {
     const emptyDiv = document.createElement("div");
+    emptyDiv.classList.add("empty-day");
     calendarContainer.appendChild(emptyDiv);
   }
 
+  // สร้างวันในเดือน
   for (let day = 1; day <= daysInMonth; day++) {
     const dayDiv = document.createElement("div");
     dayDiv.classList.add("calendar-day");
@@ -96,12 +99,7 @@ function generateCalendar(year, month) {
 
     const bookings = JSON.parse(localStorage.getItem("bookings")) || [];
     bookings.forEach((booking) => {
-      const bookingDate = new Date(booking.date);
-      if (
-        bookingDate.getFullYear() === year &&
-        bookingDate.getMonth() === month &&
-        bookingDate.getDate() === day
-      ) {
+      if (booking.date === `${year}-${String(month + 1).padStart(2, "0")}-${String(day).padStart(2, "0")}`) {
         const bookingSpan = document.createElement("span");
         bookingSpan.classList.add("booking");
         bookingSpan.textContent = `${booking.room} (${booking.time})`;
@@ -128,9 +126,9 @@ document.getElementById("booking-form").addEventListener("submit", function (e) 
     return;
   }
 
-  const room = document.getElementById("room").value;
+  const room = document.getElementById("room").value.trim();
   const date = document.getElementById("date").value;
-  const time = document.getElementById("time").value;
+  const time = document.getElementById("time").value.trim();
 
   if (room && date && time) {
     saveBooking(room, date, time);
@@ -138,6 +136,8 @@ document.getElementById("booking-form").addEventListener("submit", function (e) 
     updateCalendar();
     alert("Room booked successfully!");
     this.reset();
+  } else {
+    alert("Please fill in all fields.");
   }
 });
 
