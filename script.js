@@ -181,6 +181,6 @@ document.getElementById("booking-form").addEventListener("submit", function (e) 
   }
 });
 
-// เรียกอัปเดตครั้งแรก
+// เรียกอัปเดตครั้งแรกก
 updateBookingList();
 updateCalendar();
