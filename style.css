@@ -142,3 +142,12 @@ form button:hover {
     grid-template-columns: 1fr; /* 1 คอลัมน์สำหรับหน้าจอมือถือ */
   }
 }
+form textarea {
+  width: 100%;
+  padding: 10px;
+  margin-bottom: 15px;
+  border: 1px solid #ccc;
+  border-radius: 4px;
+  font-size: 1rem;
+  resize: vertical; /* อนุญาตให้ปรับขนาดแนวตั้ง */
+}
