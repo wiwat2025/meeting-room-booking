@@ -139,3 +139,79 @@ document
 
 // อัปเดตการแสดงผลครั้งแรก
 updateBookingList();
+
+// สร้างปฏิทิน
+function generateCalendar(year, month) {
+  const calendarContainer = document.getElementById("calendar-container");
+  calendarContainer.innerHTML = ""; // ล้างปฏิทินเก่า
+
+  const date = new Date(year, month, 1);
+  const firstDayIndex = date.getDay(); // วันแรกของเดือน
+  const daysInMonth = new Date(year, month + 1, 0).getDate(); // จำนวนวันในเดือน
+
+  // เพิ่มช่องว่างก่อนวันแรกของเดือน
+  for (let i = 0; i < firstDayIndex; i++) {
+    const emptyDiv = document.createElement("div");
+    calendarContainer.appendChild(emptyDiv);
+  }
+
+  // สร้างวันในเดือน
+  for (let day = 1; day <= daysInMonth; day++) {
+    const dayDiv = document.createElement("div");
+    dayDiv.classList.add("calendar-day");
+    dayDiv.innerHTML = `<strong>${day}</strong>`;
+
+    // แสดงรายการการจองในวันนั้น
+    const bookings = JSON.parse(localStorage.getItem("bookings")) || [];
+    bookings.forEach((booking) => {
+      const bookingDate = new Date(booking.date);
+      if (
+        bookingDate.getFullYear() === year &&
+        bookingDate.getMonth() === month &&
+        bookingDate.getDate() === day
+      ) {
+        const bookingSpan = document.createElement("span");
+        bookingSpan.classList.add("booking");
+        bookingSpan.textContent = `${booking.room} (${booking.time})`;
+        dayDiv.appendChild(bookingSpan);
+      }
+    });
+
+    calendarContainer.appendChild(dayDiv);
+  }
+}
+
+// เรียกปฏิทินสำหรับเดือนปัจจุบัน
+const today = new Date();
+generateCalendar(today.getFullYear(), today.getMonth());
+
+// อัปเดตปฏิทินเมื่อมีการเพิ่มการจอง
+function updateCalendar() {
+  const currentDate = new Date();
+  generateCalendar(currentDate.getFullYear(), currentDate.getMonth());
+}
+
+// เรียกฟังก์ชันอัปเดตปฏิทินหลังการจอง
+document
+  .getElementById("booking-form")
+  .addEventListener("submit", function (e) {
+    e.preventDefault();
+
+    const room = document.getElementById("room").value;
+    const date = document.getElementById("date").value;
+    const time = document.getElementById("time").value;
+
+    if (room && date && time) {
+      const booking = { room, date, time };
+
+      let bookings = JSON.parse(localStorage.getItem("bookings")) || [];
+      bookings.push(booking);
+      localStorage.setItem("bookings", JSON.stringify(bookings));
+
+      updateBookingList();
+      updateCalendar(); // อัปเดตปฏิทิน
+      alert("Room booked successfully!");
+      this.reset();
+    }
+  });
+
