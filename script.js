@@ -124,6 +124,65 @@ function generateCalendar(year, month) {
     calendarContainer.appendChild(dayDiv);
   }
 }
+// ฟังก์ชันสร้างปฏิทิน
+function generateCalendar(year, month) {
+  const calendarContainer = document.getElementById("calendar-container");
+  calendarContainer.innerHTML = ""; // ล้างข้อมูลเดิมในปฏิทิน
+
+  const date = new Date(year, month, 1);
+  const firstDayIndex = date.getDay();
+  const daysInMonth = new Date(year, month + 1, 0).getDate();
+
+  // เพิ่มช่องว่างก่อนวันแรกของเดือน
+  for (let i = 0; i < firstDayIndex; i++) {
+    const emptyDiv = document.createElement("div");
+    emptyDiv.classList.add("empty-day");
+    calendarContainer.appendChild(emptyDiv);
+  }
+
+  // สร้างวันในเดือน
+  for (let day = 1; day <= daysInMonth; day++) {
+    const dayDiv = document.createElement("div");
+    dayDiv.classList.add("calendar-day");
+    dayDiv.innerHTML = `<strong>${day}</strong>`;
+
+    const bookings = JSON.parse(localStorage.getItem("bookings")) || [];
+    bookings.forEach((booking) => {
+      const bookingDate = booking.date.split("-");
+      const bookingYear = parseInt(bookingDate[0], 10);
+      const bookingMonth = parseInt(bookingDate[1], 10) - 1;
+      const bookingDay = parseInt(bookingDate[2], 10);
+
+      // ตรวจสอบวันในเดือนกับการจองห้อง
+      if (bookingYear === year && bookingMonth === month && bookingDay === day) {
+        const bookingSpan = document.createElement("span");
+        bookingSpan.classList.add("booking");
+        bookingSpan.textContent = `${booking.room} (${booking.time})`;
+        dayDiv.appendChild(bookingSpan);
+
+        if (booking.description) {
+          const descSpan = document.createElement("span");
+          descSpan.classList.add("description");
+          descSpan.textContent = booking.description;
+          dayDiv.appendChild(descSpan);
+        }
+      }
+    });
+
+    calendarContainer.appendChild(dayDiv);
+  }
+}
+
+// ฟังก์ชันอัปเดตปฏิทิน
+function updateCalendar() {
+  const today = new Date();
+  generateCalendar(today.getFullYear(), today.getMonth()); // ใช้ปีและเดือนปัจจุบัน
+}
+
+// เรียกใช้งานฟังก์ชันอัปเดตปฏิทินเมื่อโหลดหน้าเว็บ
+document.addEventListener("DOMContentLoaded", () => {
+  updateCalendar(); // เรียกฟังก์ชันอัปเดตปฏิทิน
+});
 
 // ฟังก์ชันช่วยสร้าง div ว่างในปฏิทิน
 function createEmptyDiv() {
