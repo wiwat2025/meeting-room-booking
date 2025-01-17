@@ -4,6 +4,13 @@ body {
   padding: 0;
   background-color: #f4f4f9;
   color: #333;
+  box-sizing: border-box; /* ใช้ box-sizing เพื่อความแม่นยำในการคำนวณขนาด */
+}
+
+*,
+*::before,
+*::after {
+  box-sizing: inherit; /* นำไปใช้กับทุกส่วน */
 }
 
 header {
