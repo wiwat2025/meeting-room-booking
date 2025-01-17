@@ -1,49 +1,40 @@
 <!DOCTYPE html>
-<html lang="th">
+<html lang="en">
 <head>
-    <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>ระบบจองห้องประชุม</title>
-    <link rel="stylesheet" href="style.css">
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Meeting Room Booking System</title>
+  <link rel="stylesheet" href="style.css">
 </head>
 <body>
-    <!-- Form สำหรับ Login -->
-    <div id="login-form">
-        <h2>Login</h2>
-        <label for="username">Username:</label>
-        <input type="text" id="username" required><br>
-        <label for="password">Password:</label>
-        <input type="password" id="password" required><br>
-        <button id="login-btn">Login</button>
+  <div id="login-form">
+    <h2>Login</h2>
+    <input type="text" id="username" placeholder="Username" required />
+    <input type="password" id="password" placeholder="Password" required />
+    <button id="login-btn">Login</button>
+  </div>
+
+  <div id="app" style="display: none;">
+    <h1>Meeting Room Booking System</h1>
+    <button id="logout-btn">Logout</button>
+
+    <div id="booking-form">
+      <h3>Book a Meeting Room</h3>
+      <form id="booking-form">
+        <input type="text" id="room" placeholder="Room" required />
+        <input type="date" id="date" required />
+        <input type="time" id="time" required />
+        <input type="text" id="description" placeholder="Description" />
+        <button type="submit">Book Room</button>
+      </form>
     </div>
 
-    <!-- หน้าจอของแอป -->
-    <div id="app" style="display: none;">
-        <button id="logout-btn">Logout</button>
+    <h3>Your Bookings</h3>
+    <ul id="list"></ul>
 
-        <!-- Form สำหรับการจอง -->
-        <div id="booking-form">
-            <h2>Book a Room</h2>
-            <form id="booking-form">
-                <label for="room">Room:</label>
-                <input type="text" id="room" required><br>
-                <label for="date">Date (YYYY-MM-DD):</label>
-                <input type="date" id="date" required><br>
-                <label for="time">Time:</label>
-                <input type="time" id="time" required><br>
-                <label for="description">Description:</label>
-                <textarea id="description"></textarea><br>
-                <button type="submit">Book</button>
-            </form>
-        </div>
+    <div id="calendar-container"></div>
+  </div>
 
-        <h3>Booking List</h3>
-        <ul id="list"></ul>
-
-        <h3>Calendar</h3>
-        <div id="calendar-container"></div>
-    </div>
-
-    <script src="script.js"></script>
+  <script src="script.js"></script>
 </body>
 </html>
